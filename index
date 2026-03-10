@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成為孩子的職涯教練 | 生涯冒險啟程手冊</title>
+    
+    <!-- Chosen Palette: 專業深海藍 (#1A365D) 與 活力冒險橘 (#F6AD55)。營造一種穩重但充滿可能性的航海氛圍。 -->
+    <!-- Application Structure Plan: 採用「冒險任務」的線性結構，降低家長的認知負荷。從夢想到性格、價值觀、技能到熱情，最後彙整成「冒險家檔案」。 -->
+    <!-- CONFIRMATION: 無使用 SVG 圖形。無使用 Mermaid JS。 -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#1A365D',
+                        orange: '#F6AD55',
+                        lightbg: '#F8FAFC'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-up': 'slideUp 0.5s ease-out forwards'
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; background-color: #F8FAFC; color: #1A365D; }
+        .chart-container { position: relative; width: 100%; max-width: 450px; margin: 0 auto; height: 300px; }
+        .value-btn.selected { background-color: #F6AD55; color: white; border-color: #F6AD55; transform: scale(1.05); box-shadow: 0 4px 10px rgba(246, 173, 85, 0.3); }
+        input[type=range] { accent-color: #F6AD55; }
+        @media print { .no-print { display: none; } body { background: white; } .view-section { display: block !important; opacity: 1 !important; } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- 導航列 -->
+    <header class="bg-navy text-white shadow-lg sticky top-0 z-50 no-print">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center gap-2 mb-2 md:mb-0">
+                <span class="text-2xl">🧭</span>
+                <h1 class="text-lg font-bold tracking-tight">生涯冒險啟程手冊 <span class="text-orange text-sm ml-2 font-normal">數位互動版</span></h1>
+            </div>
+            <nav class="w-full md:w-auto overflow-x-auto">
+                <ul class="flex gap-2 text-xs whitespace-nowrap" id="progress-nav">
+                    <li class="px-3 py-1 rounded-full bg-orange text-white" id="nav-0">0.啟程</li>
+                    <li class="px-3 py-1 rounded-full text-slate-400" id="nav-1">1.夢想</li>
+                    <li class="px-3 py-1 rounded-full text-slate-400" id="nav-2">2.風格</li>
+                    <li class="px-3 py-1 rounded-full text-slate-400" id="nav-3">3.信條</li>
+                    <li class="px-3 py-1 rounded-full text-slate-400" id="nav-4">4.技能</li>
+                    <li class="px-3 py-1 rounded-full text-slate-400" id="nav-5">5.熱情</li>
+                    <li class="px-3 py-1 rounded-full text-slate-400" id="nav-6">檔案</li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-4xl mx-auto p-4 md:p-8">
+        
+        <!-- 任務 0: 歡迎 -->
+        <section id="view-0" class="view-section animate-fade-in flex flex-col items-center text-center py-10">
+            <div class="text-7xl mb-6">⛵</div>
+            <h2 class="text-3xl font-bold text-navy mb-4">冒險家，歡迎登船！</h2>
+            <p class="text-slate-600 mb-8 max-w-xl leading-relaxed">
+                我是你的生涯嚮導，勇哥 Steven。在決定「航向何方」之前，必須先清楚「船長是誰」。這份檔案將記錄你獨一無二的天賦與渴望。
+            </p>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8 w-full max-w-sm text-left">
+                <p class="text-sm font-bold text-navy mb-3">📍 冒險說明：</p>
+                <ul class="text-sm text-slate-500 space-y-2">
+                    <li>● 孩子是「船長」，父母是「大副」。</li>
+                    <li>● 沒有正確答案，真誠記錄即可。</li>
+                    <li>● 完成任務後可生成專屬檔案。</li>
+                </ul>
+            </div>
+            <button onclick="goToView(1)" class="bg-orange hover:bg-orange-600 text-white font-bold py-4 px-12 rounded-full text-xl shadow-lg transition-transform hover:scale-105 no-print">
+                開始探險 🗺️
+            </button>
+        </section>
+
+        <!-- 任務 1: 夢想清單 -->
+        <section id="view-1" class="view-section hidden animate-fade-in">
+            <h2 class="text-2xl font-bold text-navy mb-2 flex items-center gap-2"><span>✨</span> 夢想清單：航向偉大的航道</h2>
+            <p class="text-slate-500 mb-6 text-sm">放下所有限制，如果你可以完成任何事，你最想實現的任務是什麼？</p>
+            
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="dream-input" placeholder="輸入熱血沸騰的目標..." class="flex-grow px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange focus:outline-none">
+                    <button onclick="addDream()" class="bg-navy text-white px-6 rounded-xl font-bold hover:bg-blue-900 transition-colors">加入</button>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-4 min-h-[160px] border border-dashed border-slate-300">
+                    <ul id="dream-list" class="space-y-2"></ul>
+                    <p id="dream-empty" class="text-slate-400 text-sm italic text-center py-10">尚未新增任何任務...</p>
+                </div>
+            </div>
+            <div class="flex justify-between no-print">
+                <button onclick="goToView(0)" class="text-navy font-bold px-6 py-2 border border-navy rounded-xl">返回</button>
+                <button onclick="goToView(2)" class="bg-orange text-white px-8 py-2 rounded-xl font-bold">下一步</button>
+            </div>
+        </section>
+
+        <!-- 任務 2: 戰鬥風格 -->
+        <section id="view-2" class="view-section hidden animate-fade-in">
+            <h2 class="text-2xl font-bold text-navy mb-2 flex items-center gap-2"><span>⚔️</span> 戰鬥風格：性格探索</h2>
+            <p class="text-slate-500 mb-6 text-sm">了解你的應戰模式，是衝鋒陷陣的騎士，還是冷靜觀察的遊俠？</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between text-sm font-bold mb-1"><span>🛡️ 騎士 (行動派)</span><span class="text-orange" id="txt-k">50</span></div>
+                        <input type="range" id="rng-k" value="50" class="w-full" oninput="updateStyle()">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm font-bold mb-1"><span>🏹 遊俠 (觀察派)</span><span class="text-orange" id="txt-r">50</span></div>
+                        <input type="range" id="rng-r" value="50" class="w-full" oninput="updateStyle()">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm font-bold mb-1"><span>🔮 魔法師 (研究派)</span><span class="text-orange" id="txt-m">50</span></div>
+                        <input type="range" id="rng-m" value="50" class="w-full" oninput="updateStyle()">
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="styleChart"></canvas>
+                </div>
+            </div>
+            <div class="flex justify-between mt-8 no-print">
+                <button onclick="goToView(1)" class="text-navy font-bold px-6 py-2 border border-navy rounded-xl">返回</button>
+                <button onclick="goToView(3)" class="bg-orange text-white px-8 py-2 rounded-xl font-bold">下一步</button>
+            </div>
+        </section>
+
+        <!-- 任務 3: 信念符文 -->
+        <section id="view-3" class="view-section hidden animate-fade-in">
+            <h2 class="text-2xl font-bold text-navy mb-2 flex items-center gap-2"><span>🛡️</span> 信念符文：價值觀探索</h2>
+            <p class="text-slate-500 mb-6 text-sm">請選出對你最不可或缺的 <strong class="text-orange">3</strong> 個冒險家信條。</p>
+            
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="values-box"></div>
+                <p id="val-warn" class="text-red-500 text-xs mt-4 text-center hidden">最多只能選 3 個唷！</p>
+            </div>
+            <div class="flex justify-between no-print">
+                <button onclick="goToView(2)" class="text-navy font-bold px-6 py-2 border border-navy rounded-xl">返回</button>
+                <button onclick="goToView(4)" class="bg-orange text-white px-8 py-2 rounded-xl font-bold">下一步</button>
+            </div>
+        </section>
+
+        <!-- 任務 4: 技能點數 -->
+        <section id="view-4" class="view-section hidden animate-fade-in">
+            <h2 class="text-2xl font-bold text-navy mb-6 flex items-center gap-2"><span>🌟</span> 技能點數：能力探索</h2>
+            <div class="space-y-4">
+                <div class="bg-white p-5 rounded-2xl border-l-4 border-orange shadow-sm">
+                    <label class="block text-sm font-bold text-navy mb-2">1. 我的隱藏版超能力：</label>
+                    <input type="text" id="sk1" placeholder="例如：很會畫畫、很會跟陌生人聊天..." class="w-full border-b focus:border-orange outline-none py-1">
+                </div>
+                <div class="bg-white p-5 rounded-2xl border-l-4 border-navy shadow-sm">
+                    <label class="block text-sm font-bold text-navy mb-2">2. 我的光榮戰績 (解決過最難的事)：</label>
+                    <textarea id="sk2" rows="2" class="w-full border-b focus:border-navy outline-none py-1 resize-none"></textarea>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border-l-4 border-orange shadow-sm">
+                    <label class="block text-sm font-bold text-navy mb-2">3. 別人眼中的我 (最常被稱讚的優點)：</label>
+                    <input type="text" id="sk3" class="w-full border-b focus:border-orange outline-none py-1">
+                </div>
+            </div>
+            <div class="flex justify-between mt-8 no-print">
+                <button onclick="goToView(3)" class="text-navy font-bold px-6 py-2 border border-navy rounded-xl">返回</button>
+                <button onclick="goToView(5)" class="bg-orange text-white px-8 py-2 rounded-xl font-bold">下一步</button>
+            </div>
+        </section>
+
+        <!-- 任務 5: 熱情動力 -->
+        <section id="view-5" class="view-section hidden animate-fade-in">
+            <h2 class="text-2xl font-bold text-navy mb-2 flex items-center gap-2"><span>🔥</span> 熱情動力：能量火花</h2>
+            <p class="text-slate-500 mb-6 text-sm">什麼事會讓你廢寢忘食、充滿動力？</p>
+            <div class="bg-white rounded-2xl shadow-sm p-6 space-y-4 mb-6">
+                <div class="flex flex-col md:flex-row gap-2">
+                    <input type="text" id="in1" placeholder="熱情活動..." class="flex-1 bg-slate-50 px-4 py-2 rounded-lg outline-none">
+                    <input type="text" id="ir1" placeholder="為什麼喜歡這件事？" class="flex-1 border-b border-slate-200 px-2 py-2 outline-none">
+                </div>
+                <div class="flex flex-col md:flex-row gap-2">
+                    <input type="text" id="in2" placeholder="熱情活動..." class="flex-1 bg-slate-50 px-4 py-2 rounded-lg outline-none">
+                    <input type="text" id="ir2" placeholder="為什麼喜歡這件事？" class="flex-1 border-b border-slate-200 px-2 py-2 outline-none">
+                </div>
+            </div>
+            <div class="flex justify-between no-print">
+                <button onclick="goToView(4)" class="text-navy font-bold px-6 py-2 border border-navy rounded-xl">返回</button>
+                <button onclick="finalize()" class="bg-navy text-white px-10 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-transform">生成檔案 🗺️</button>
+            </div>
+        </section>
+
+        <!-- 最終檔案 -->
+        <section id="view-6" class="view-section hidden animate-fade-in py-6">
+            <div class="bg-white border-2 border-navy rounded-3xl p-6 md:p-10 shadow-2xl relative">
+                <div class="text-center border-b-2 border-slate-100 pb-6 mb-8">
+                    <h2 class="text-3xl font-bold text-navy">冒險家檔案摘要</h2>
+                    <p class="text-orange text-sm font-bold mt-2">✨ 我的未來，是一場我親自描繪的精彩冒險 ✨</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="font-bold text-navy border-l-4 border-orange pl-3 mb-2">🚀 終極任務 (夢想)</h3>
+                            <ul id="sum-dreams" class="text-sm text-slate-600 list-disc list-inside space-y-1"></ul>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-navy border-l-4 border-orange pl-3 mb-2">⚔️ 戰鬥風格 (性格)</h3>
+                            <p id="sum-style" class="text-sm text-slate-600 italic"></p>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-navy border-l-4 border-orange pl-3 mb-2">🛡️ 三大信條 (價值)</h3>
+                            <div id="sum-vals" class="flex flex-wrap gap-2 mt-2"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="font-bold text-navy border-l-4 border-orange pl-3 mb-2">🌟 我的最強技能</h3>
+                            <div id="sum-skills" class="text-sm text-slate-600 space-y-1"></div>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-navy border-l-4 border-orange pl-3 mb-2">🔥 能量火花 (興趣)</h3>
+                            <div id="sum-interests" class="text-sm text-slate-600 space-y-1"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 text-center no-print">
+                    <p class="text-xs text-slate-400 mb-4">大副與船長，請帶著這份羅盤，開啟對話吧！</p>
+                    <div class="flex justify-center gap-4">
+                        <button onclick="goToView(5)" class="px-6 py-2 border border-slate-200 rounded-xl text-sm font-bold text-slate-500">返回修改</button>
+                        <button onclick="window.print()" class="bg-orange text-white px-8 py-2 rounded-xl font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform">
+                            <span>🖨️</span> 列印/存為PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-navy text-slate-500 text-center py-6 text-xs no-print">
+        <p>© 2025 職涯教練勇哥 Steven | 生涯冒險啟程手冊</p>
+    </footer>
+
+    <script>
+        const state = { dreams: [], vals: [], styleChart: null };
+        const valOptions = ["自由獨立", "創造改變", "穩定安全", "高薪收入", "助人服務", "團隊合作", "挑戰困難", "專業權威", "平衡生活"];
+
+        function init() {
+            const box = document.getElementById('values-box');
+            valOptions.forEach(v => {
+                const b = document.createElement('button');
+                b.className = "value-btn border border-slate-200 py-3 rounded-xl text-sm font-bold text-slate-500 hover:border-orange transition-all";
+                b.innerText = v;
+                b.onclick = () => {
+                    const idx = state.vals.indexOf(v);
+                    if (idx > -1) { state.vals.splice(idx, 1); b.classList.remove('selected'); }
+                    else if (state.vals.length < 3) { state.vals.push(v); b.classList.add('selected'); }
+                    else { document.getElementById('val-warn').classList.remove('hidden'); setTimeout(()=>document.getElementById('val-warn').classList.add('hidden'), 2000); }
+                };
+                box.appendChild(b);
+            });
+            document.getElementById('dream-input').addEventListener('keypress', (e) => e.key === 'Enter' && addDream());
+        }
+
+        function goToView(n) {
+            document.querySelectorAll('.view-section').forEach((s, i) => s.classList.toggle('hidden', i !== n));
+            document.querySelectorAll('#progress-nav li').forEach((l, i) => {
+                l.classList.toggle('bg-orange', i === n);
+                l.classList.toggle('text-white', i === n);
+                l.classList.toggle('text-slate-400', i !== n);
+            });
+            window.scrollTo(0, 0);
+            if (n === 2) updateStyle();
+        }
+
+        function addDream() {
+            const i = document.getElementById('dream-input');
+            if (i.value.trim() && state.dreams.length < 10) {
+                state.dreams.push(i.value.trim());
+                i.value = '';
+                renderDreams();
+            }
+        }
+
+        function renderDreams() {
+            const l = document.getElementById('dream-list');
+            const e = document.getElementById('dream-empty');
+            l.innerHTML = '';
+            e.classList.toggle('hidden', state.dreams.length > 0);
+            state.dreams.forEach((d, idx) => {
+                const li = document.createElement('li');
+                li.className = "flex justify-between items-center bg-white p-2 rounded-lg border border-slate-100 text-sm";
+                li.innerHTML = `<span><span class="text-orange mr-2">✦</span>${d}</span><button onclick="state.dreams.splice(${idx},1);renderDreams()" class="text-slate-300 hover:text-red-500">×</button>`;
+                l.appendChild(li);
+            });
+        }
+
+        function updateStyle() {
+            const k = parseInt(document.getElementById('rng-k').value);
+            const r = parseInt(document.getElementById('rng-r').value);
+            const m = parseInt(document.getElementById('rng-m').value);
+            document.getElementById('txt-k').innerText = k;
+            document.getElementById('txt-r').innerText = r;
+            document.getElementById('txt-m').innerText = m;
+
+            if (!state.styleChart) {
+                const ctx = document.getElementById('styleChart').getContext('2d');
+                state.styleChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['騎士', '遊俠', '魔法師'],
+                        datasets: [{ data: [k, r, m], backgroundColor: 'rgba(246, 173, 85, 0.4)', borderColor: '#F6AD55', borderWidth: 2, pointRadius: 0 }]
+                    },
+                    options: { scales: { r: { min: 0, max: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } }
+                });
+            } else {
+                state.styleChart.data.datasets[0].data = [k, r, m];
+                state.styleChart.update();
+            }
+        }
+
+        function finalize() {
+            document.getElementById('sum-dreams').innerHTML = state.dreams.length ? state.dreams.map(d => `<li>${d}</li>`).join('') : '未填寫';
+            
+            const k = parseInt(document.getElementById('rng-k').value);
+            const r = parseInt(document.getElementById('rng-r').value);
+            const m = parseInt(document.getElementById('rng-m').value);
+            let type = "均衡型";
+            if (k > r+15 && k > m+15) type = "行動派騎士";
+            else if (r > k+15 && r > m+15) type = "觀察派遊俠";
+            else if (m > k+15 && m > r+15) type = "研究派魔法師";
+            document.getElementById('sum-style').innerText = `我是 ${type} 的冒險家 (騎士:${k} / 遊俠:${r} / 魔法師:${m})`;
+
+            document.getElementById('sum-vals').innerHTML = state.vals.map(v => `<span class="bg-navy text-white px-3 py-1 rounded-full text-xs">${v}</span>`).join('');
+            
+            document.getElementById('sum-skills').innerHTML = `
+                <p>● 隱藏超能力：${document.getElementById('sk1').value || '-'}</p>
+                <p>● 光榮戰績：${document.getElementById('sk2').value || '-'}</p>
+                <p>● 他人稱讚：${document.getElementById('sk3').value || '-'}</p>
+            `;
+
+            const i1 = document.getElementById('in1').value;
+            const i2 = document.getElementById('in2').value;
+            document.getElementById('sum-interests').innerHTML = [i1, i2].filter(x=>x).map(x => `<p>● ${x}</p>`).join('') || '未填寫';
+
+            goToView(6);
+        }
+
+        init();
+    </script>
+</body>
+</html>
